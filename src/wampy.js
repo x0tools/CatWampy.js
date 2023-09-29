@@ -1257,9 +1257,9 @@ class Wampy {
      * @private
      */
     async _onRegisteredMessage ([, requestId, registrationId]) {
-        const { topic, callbacks } = this._requests[requestId];
-
-        this._rpcRegs[registrationId] = { id: registrationId, callbacks: [callbacks.rpc] };
+        const { topic, callbacks, advancedOptions } = this._requests[requestId];
+        //TODO zhiyuan 修复重连后 advancedOptions参数丢失
+        this._rpcRegs[registrationId] = { id: registrationId, callbacks: [callbacks.rpc], advancedOptions:advancedOptions };
         this._rpcRegs[topic] = this._rpcRegs[registrationId];
         this._rpcNames.add(topic);
 
@@ -1484,9 +1484,9 @@ class Wampy {
 
         this._rpcRegs = {};
         this._rpcNames = new Set();
-
         for (const rpcName of rn) {
-            this.register(rpcName, rpcs[rpcName].callbacks[0]);
+            //TODO zhiyuan 修复重连后 advancedOptions参数丢失
+            this.register(rpcName, rpcs[rpcName].callbacks[0],rpcs[rpcName].advancedOptions);
         }
     }
 
@@ -2037,7 +2037,8 @@ class Wampy {
             this._fillOpStatusByError(invalidParamError);
             throw invalidParamError;
         }
-
+        //TODO zhiyuan  修复自定义扩展参数无效问题
+/*
         const { match, invoke } = advancedOptions || {};
         const isMatchInvalid = match && !['exact', 'prefix', 'wildcard'].includes(match);
         const isInvokeInvalid = invoke && !['single', 'roundrobin', 'random', 'first', 'last'].includes(invoke);
@@ -2052,19 +2053,21 @@ class Wampy {
         if (!this._preReqChecks({ topic, patternBased: Boolean(match), allowWAMP: false }, 'dealer')) {
             throw this._cache.opStatus.error;
         }
-
+*/
         const reqId = this._getReqId();
         const callbacks = getNewPromise();
+/*
         const options = {
             ... (match ? { match } : {}),
             ... (invoke ? { invoke } : {}),
         };
-
+*/
+        const options = advancedOptions;
         if (rpc) {
             callbacks.rpc = rpc;
         }
-
-        this._requests[reqId] = { topic, callbacks };
+         //TODO zhiyuan  修复重连后自定义扩展参数丢失
+        this._requests[reqId] = { topic, callbacks, advancedOptions };
 
         // WAMP SPEC: [REGISTER, Request|id, Options|dict, Procedure|uri]
         this._send([WAMP_MSG_SPEC.REGISTER, reqId, options, topic]);

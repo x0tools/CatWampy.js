@@ -1,5 +1,7 @@
 # Wampy.js
 
+
+
 ## About
 
 Feature-rich, lightweight and zero dependency (by default) WAMP (WebSocket Application Messaging Protocol)
