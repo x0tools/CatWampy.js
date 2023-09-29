@@ -72,5 +72,8 @@ module.exports = function (grunt) {
 
     grunt.registerTask('default', [
         'clean:dist', 'babel', 'browserify', 'uglify',
-        'concat', 'compress', 'clean:browserFolder']);
+        'concat']);
+    /* grunt.registerTask('default', [
+        'clean:dist', 'babel', 'browserify', 'uglify',
+        'concat', 'compress', 'clean:browserFolder']);*/
 };
